@@ -33,3 +33,7 @@ main = hspec $ do
           ("b", Toml.Integer 2),
           ("c", Toml.TableValue (Map.fromList [("d", Toml.Integer 3)]))
         ])
+
+    it "errors for a duplicate key" $
+      Toml.decode "key=1\nkey=2"
+        `shouldBe` Left (Toml.DuplicateKey "key")

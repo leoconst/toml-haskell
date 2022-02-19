@@ -1,6 +1,7 @@
 module Toml
   ( Table
   , Value(..)
+  , DecodeError(..)
   , decode
   ) where
 

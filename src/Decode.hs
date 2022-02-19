@@ -1,6 +1,7 @@
 module Decode
   ( Table
   , Value(..)
+  , DecodeError(..)
   , decode
   ) where
 
@@ -17,8 +18,8 @@ import qualified Syntax
 
 type Table = Map.Map Text Value
 
-data Value =
-    String Text
+data Value
+  = String Text
   | Integer Integer
   | Float Double
   | Boolean Bool
@@ -26,11 +27,31 @@ data Value =
   | TableValue Table
   deriving (Eq, Show)
 
+data DecodeError
+  = ParseError Text
+  | DuplicateKey Text
+  | DottedKey (NonEmpty Text)
+  deriving (Eq)
 
-decode :: Text -> Parser.Result Table
-decode source = do
-  (Syntax.Ast lines) <- Parser.parse Syntax.toml source
-  readLines lines Map.empty
+instance (Show DecodeError) where
+  show decodeError =
+    T.unpack (case decodeError of
+      ParseError message ->
+        "Parse error: " <> message
+      DuplicateKey key ->
+        "Duplicate key: " <> key
+      DottedKey keyParts ->
+           "Dotted keys are not currently supported: "
+        <> T.intercalate "." (NonEmpty.toList keyParts))
+
+
+decode :: Text -> Either DecodeError Table
+decode source =
+  case Parser.parse Syntax.toml source of
+    Left message ->
+      Left (ParseError message)
+    Right (Syntax.Ast lines) ->
+      readLines lines Map.empty
 
 
 readLines [] map =
@@ -60,9 +81,7 @@ addKeyValueToMap astKey astValue map = do
 
 
 unwrapKey (Syntax.Key (key:|[])) = Right key
-unwrapKey (Syntax.Key keyParts) = Left $
-     "Dotted keys are not currently supported: "
-  <> T.intercalate "." (NonEmpty.toList keyParts)
+unwrapKey (Syntax.Key keyParts) = Left (DottedKey keyParts)
 
 
 tryInsert key value map =
@@ -71,7 +90,7 @@ tryInsert key value map =
       Map.insertLookupWithKey handleKey key value map
   in
   case existingValue of
-    Just _ -> Left $ "Duplicate key: " <> key
+    Just _ -> Left (DuplicateKey key)
     Nothing -> Right newMap
   where
     handleKey key newValue oldValue = oldValue
