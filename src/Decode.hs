@@ -24,7 +24,7 @@ data Value =
   | Boolean Bool
   | Array [Value]
   | TableValue Table
-  deriving (Show)
+  deriving (Eq, Show)
 
 
 decode :: Text -> Parser.Result Table

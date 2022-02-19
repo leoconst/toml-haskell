@@ -9,4 +9,4 @@ main :: IO ()
 main = hspec $ do
   describe "Toml.decode" $ do
     it "returns empty table for empty source" $
-      isRight (Toml.decode "") `shouldBe` True
+      Toml.decode "" `shouldBe` Right Map.empty
