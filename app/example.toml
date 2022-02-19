@@ -1,0 +1,70 @@
+# This in an example TOML file.
+
+# The formatting is a little
+# wacky to test some edge-cases.
+
+lang = 'TOML'
+
+multi-line-array = [
+
+		# interruption
+
+
+1,
+3,
+	4,
+
+
+
+
+ 4,
+
+ -0,]
+
+[	table ]
+key = 'value'
+	#not-dotted = 1_234.567e89
+ 123 = 456
+stuff = [1,'non-number'
+	#,nan
+]
+bools = [ true, false ]
+  
+##
+
+# An empty table
+[empty]
+
+[table-2]
+   key = "This table's key"
+   # Empty array
+   "empty array" = []
+   #consts = [true,false,nan,] # trailing comma
+   lang = 'DE'
+   escaped = "Hello\n\tthere!"
+   unicode = "\u2603"
+
+['strings!']
+
+mll = '''Let's goooo'''
+regex2 = '''I [dw]on't need \d{2} apples'''
+
+1-closing-quote = ''''That,' she said, 'is still pointless.''''
+2-closing-quotes = '''I'm trying to trick the parser'''''
+
+lines  = '''
+The first newline is
+trimmed in raw strings.
+   All other whitespace
+   is preserved.
+'''
+'more lines' = '''
+
+Lots''
+
+   of' lines'
+
+
+ ' '
+
+'''

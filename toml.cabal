@@ -1,0 +1,94 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 847a57890fe9a313974550f4daff349ec62bf44d31dd134e644a450a256c61fa
+
+name:           toml
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/leoconst/toml#readme>
+homepage:       https://github.com/leoconst/toml#readme
+bug-reports:    https://github.com/leoconst/toml/issues
+author:         Leo Constantinides
+maintainer:     35425444+leoconst@users.noreply.github.com
+copyright:      2022 Leo Constantinides
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/leoconst/toml
+
+library
+  exposed-modules:
+      Decode
+      Parser
+      Syntax
+      Syntax.Ast
+      Syntax.Boolean
+      Syntax.Common
+      Syntax.Declarations
+      Syntax.Ignored
+      Syntax.Integers
+      Syntax.Key
+      Syntax.Strings
+      Syntax.Values
+      Toml
+  other-modules:
+      Paths_toml
+  hs-source-dirs:
+      src
+  default-extensions:
+      OverloadedStrings
+      NamedFieldPuns
+      LambdaCase
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , text
+  default-language: Haskell2010
+
+executable toml-exe
+  main-is: Main.hs
+  other-modules:
+      PrettyPrint
+      Paths_toml
+  hs-source-dirs:
+      app
+  default-extensions:
+      OverloadedStrings
+      NamedFieldPuns
+      LambdaCase
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , text
+    , toml
+  default-language: Haskell2010
+
+test-suite toml-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_toml
+  hs-source-dirs:
+      test
+  default-extensions:
+      OverloadedStrings
+      NamedFieldPuns
+      LambdaCase
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , hspec
+    , text
+    , toml
+  default-language: Haskell2010

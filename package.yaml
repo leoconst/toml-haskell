@@ -1,0 +1,56 @@
+name:                toml
+version:             0.1.0.0
+github:              "leoconst/toml"
+license:             BSD3
+author:              "Leo Constantinides"
+maintainer:          "35425444+leoconst@users.noreply.github.com"
+copyright:           "2022 Leo Constantinides"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/leoconst/toml#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- containers
+- text
+
+default-extensions:
+  - OverloadedStrings
+  - NamedFieldPuns
+  - LambdaCase
+
+library:
+  source-dirs: src
+
+executables:
+  toml-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - toml
+
+tests:
+  toml-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - toml
+    - hspec
