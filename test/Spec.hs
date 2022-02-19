@@ -25,3 +25,11 @@ main = hspec $ do
     it "decodes a double-quoted key" $
       Toml.decode "\"Quoted key\" = 123"
         `shouldBe` Right (Map.fromList [("Quoted key", Toml.Integer 123)])
+
+    it "decodes top-level keys and a table" $
+      Toml.decode "a=1\nb=2\n[c]\nd=3"
+        `shouldBe` Right (Map.fromList [
+          ("a", Toml.Integer 1),
+          ("b", Toml.Integer 2),
+          ("c", Toml.TableValue (Map.fromList [("d", Toml.Integer 3)]))
+        ])
