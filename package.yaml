@@ -42,6 +42,15 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - toml
+  test-toml-encoder:
+    main:                Tester.hs
+    source-dirs:         test/toml-test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - toml
 
 tests:
   toml-test:
