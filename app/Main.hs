@@ -13,5 +13,5 @@ main = do
   let
     tableResult = Toml.decode source
   case tableResult of
-    Left _ -> print tableResult
+    Left error -> print error
     Right table -> T.putStrLn $ PrettyPrint.table table
