@@ -49,21 +49,27 @@ tableWithIndentation startNewLine toml =
       keyValueWithIndentation startNewLine key value ""
 
 keyValueWithIndentation startNewLine key value text =
-     textShow key <> ": " <> valueWithIndentation value (indented startNewLine)
+     textShow key <> ": " <> valueWithIndentation value startNewLine
   <> text
 
-valueWithIndentation (Toml.TableValue table) startNewLine =
-  tableWithIndentation startNewLine table
-valueWithIndentation (Toml.Array values) startNewLine =
-  arrayWithIndentation values startNewLine
-valueWithIndentation (Toml.String text) startNewLine =
-  typedValue "string" text startNewLine
-valueWithIndentation (Toml.Integer integer) startNewLine =
-  typedValue "integer" (textShow integer) startNewLine
-valueWithIndentation (Toml.Float float) startNewLine =
-  typedValue "float" (textShow float) startNewLine
-valueWithIndentation (Toml.Boolean boolean) startNewLine =
-  typedValue "bool" (if boolean then "true" else "false") startNewLine
+valueWithIndentation value startNewLine =
+  output value
+  where
+    output = \case
+      Toml.TableValue table ->
+        tableWithIndentation indentedStartNewLine table
+      Toml.Array values ->
+        arrayWithIndentation values indentedStartNewLine
+      Toml.String text ->
+        typedValue "string" text indentedStartNewLine
+      Toml.Integer integer ->
+        typedValue "integer" (textShow integer) indentedStartNewLine
+      Toml.Float float ->
+        typedValue "float" (textShow float) indentedStartNewLine
+      Toml.Boolean boolean ->
+        typedValue "bool" (if boolean then "true" else "false") indentedStartNewLine
+    indentedStartNewLine left right =
+      left `startNewLine` indent <> right
 
 arrayWithIndentation values startNewLine =
     "["
@@ -73,16 +79,13 @@ arrayWithIndentation values startNewLine =
     separator =
       "," `startNewLine` indent
     indentValue value =
-      valueWithIndentation value (indented startNewLine)
+      valueWithIndentation value startNewLine
 
 typedValue typeName valueString startNewLine =
     "{"
   `startNewLine` indent <> "\"type\": \"" <> typeName <> "\","
   `startNewLine` indent <> "\"value\": \"" <> valueString <> "\""
   `startNewLine` "}"
-
-indented insertNewLine left right =
-  left `insertNewLine` indent <> right
 
 indent =
   "  "
