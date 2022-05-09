@@ -27,56 +27,62 @@ main =
 
 
 table =
-  tableWithNewLine "\n"
+  tableWithNewLine insertNewLine
+  where
+    insertNewLine left right =
+      left <> "\n" <> right
 
-tableWithNewLine newLine toml =
+tableWithNewLine startNewLine toml =
   if Map.null toml
     then "{}"
     else "{"
-      <> newLine <> indent <> tableWithKeys
-      <> newLine <> "}"
+      `startNewLine` indent <> tableWithKeys
+      `startNewLine` "}"
   where
     tableWithKeys =
       T.intercalate separator keyValues
     separator =
-      "," <> newLine <> indent
+      "," `startNewLine` indent
     keyValues =
       map keyValue (Map.toList toml)
     keyValue (key, value) =
-      keyValueWithNewLine newLine key value ""
+      keyValueWithNewLine startNewLine key value ""
 
-keyValueWithNewLine newLine key value text =
-     textShow key <> ": " <> valueWithNewLine value (newLine <> indent)
+keyValueWithNewLine startNewLine key value text =
+     textShow key <> ": " <> valueWithNewLine value (indented startNewLine)
   <> text
 
-valueWithNewLine (Toml.TableValue table) newLine =
-  tableWithNewLine newLine table
-valueWithNewLine (Toml.Array values) newLine =
-  arrayWithNewLine values newLine
-valueWithNewLine (Toml.String text) newLine =
-  typedValue "string" text newLine
-valueWithNewLine (Toml.Integer integer) newLine =
-  typedValue "integer" (textShow integer) newLine
-valueWithNewLine (Toml.Float float) newLine =
-  typedValue "float" (textShow float) newLine
-valueWithNewLine (Toml.Boolean boolean) newLine =
-  typedValue "bool" (if boolean then "true" else "false") newLine
+valueWithNewLine (Toml.TableValue table) startNewLine =
+  tableWithNewLine startNewLine table
+valueWithNewLine (Toml.Array values) startNewLine =
+  arrayWithNewLine values startNewLine
+valueWithNewLine (Toml.String text) startNewLine =
+  typedValue "string" text startNewLine
+valueWithNewLine (Toml.Integer integer) startNewLine =
+  typedValue "integer" (textShow integer) startNewLine
+valueWithNewLine (Toml.Float float) startNewLine =
+  typedValue "float" (textShow float) startNewLine
+valueWithNewLine (Toml.Boolean boolean) startNewLine =
+  typedValue "bool" (if boolean then "true" else "false") startNewLine
 
-arrayWithNewLine values newLine =
-     "["
-  <> newLine <> indent <> (T.intercalate separator (map indentValue values))
-  <> newLine <> "]"
+arrayWithNewLine values startNewLine =
+    "["
+  `startNewLine` indent <> (T.intercalate separator (map indentValue values))
+  `startNewLine` "]"
   where
     separator =
-      "," <> newLine <> indent
+      "," `startNewLine` indent
     indentValue value =
-      valueWithNewLine value (newLine <> indent)
+      valueWithNewLine value (indented startNewLine)
 
-typedValue typeName valueString newLine =
-     "{"
-  <> newLine <> indent <> "\"type\": \"" <> typeName <> "\","
-  <> newLine <> indent <> "\"value\": \"" <> valueString <> "\""
-  <> newLine <> "}"
+typedValue typeName valueString startNewLine =
+    "{"
+  `startNewLine` indent <> "\"type\": \"" <> typeName <> "\","
+  `startNewLine` indent <> "\"value\": \"" <> valueString <> "\""
+  `startNewLine` "}"
+
+indented insertNewLine left right =
+  left `insertNewLine` indent <> right
 
 indent =
   "  "
