@@ -3,7 +3,7 @@ module Syntax.Values
   ) where
 
 
-import Parser (character, optional, oneOf, intercalated, bracketed, (<|>))
+import Parser
 import Syntax.Ast
 import Syntax.Boolean
 import Syntax.Ignored
@@ -14,28 +14,10 @@ import Syntax.Strings
 value =
   oneOf
     [ Integer <$> integer
-    , String <$> string
+    , String <$> anyString
     , Boolean <$> boolean
     , Array <$> array
     ]
-
-integer =
-  oneOf
-    [ binary
-    , octal
-    , hexadecimal
-    , decimal
-    ]
-
-string =
-  oneOf
-    [ multilineLiteralString
-    , literalString
-    , basicString
-    ]
-
-boolean =
-  true <|> false
 
 array =
   bracketed (character '[') (character ']') values

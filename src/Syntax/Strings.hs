@@ -1,6 +1,6 @@
 module Syntax.Strings
-  ( literalString
-  , multilineLiteralString
+  ( anyString
+  , literalString
   , basicString
   ) where
 
@@ -14,6 +14,13 @@ import Data.List.NonEmpty (NonEmpty)
 import Parser
 import Syntax.Common
 
+
+anyString =
+  oneOf
+    [ multilineLiteralString
+    , literalString
+    , basicString
+    ]
 
 literalString =
   stringParser delimiter literalStringCharacters

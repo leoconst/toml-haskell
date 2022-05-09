@@ -1,8 +1,5 @@
 module Syntax.Integers
-  ( decimal
-  , binary
-  , octal
-  , hexadecimal
+  ( integer
   ) where
 
 
@@ -13,6 +10,14 @@ import qualified Data.List.NonEmpty as NonEmpty
 
 import Parser
 
+
+integer =
+  oneOf
+    [ binary
+    , octal
+    , hexadecimal
+    , decimal
+    ]
 
 decimal =
   signed unsignedDecimal
