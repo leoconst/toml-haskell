@@ -27,12 +27,12 @@ main =
 
 
 table =
-  tableWithNewLine insertNewLine
+  tableWithIndentation insertNewLine
   where
     insertNewLine left right =
       left <> "\n" <> right
 
-tableWithNewLine startNewLine toml =
+tableWithIndentation startNewLine toml =
   if Map.null toml
     then "{}"
     else "{"
@@ -46,26 +46,26 @@ tableWithNewLine startNewLine toml =
     keyValues =
       map keyValue (Map.toList toml)
     keyValue (key, value) =
-      keyValueWithNewLine startNewLine key value ""
+      keyValueWithIndentation startNewLine key value ""
 
-keyValueWithNewLine startNewLine key value text =
-     textShow key <> ": " <> valueWithNewLine value (indented startNewLine)
+keyValueWithIndentation startNewLine key value text =
+     textShow key <> ": " <> valueWithIndentation value (indented startNewLine)
   <> text
 
-valueWithNewLine (Toml.TableValue table) startNewLine =
-  tableWithNewLine startNewLine table
-valueWithNewLine (Toml.Array values) startNewLine =
-  arrayWithNewLine values startNewLine
-valueWithNewLine (Toml.String text) startNewLine =
+valueWithIndentation (Toml.TableValue table) startNewLine =
+  tableWithIndentation startNewLine table
+valueWithIndentation (Toml.Array values) startNewLine =
+  arrayWithIndentation values startNewLine
+valueWithIndentation (Toml.String text) startNewLine =
   typedValue "string" text startNewLine
-valueWithNewLine (Toml.Integer integer) startNewLine =
+valueWithIndentation (Toml.Integer integer) startNewLine =
   typedValue "integer" (textShow integer) startNewLine
-valueWithNewLine (Toml.Float float) startNewLine =
+valueWithIndentation (Toml.Float float) startNewLine =
   typedValue "float" (textShow float) startNewLine
-valueWithNewLine (Toml.Boolean boolean) startNewLine =
+valueWithIndentation (Toml.Boolean boolean) startNewLine =
   typedValue "bool" (if boolean then "true" else "false") startNewLine
 
-arrayWithNewLine values startNewLine =
+arrayWithIndentation values startNewLine =
     "["
   `startNewLine` indent <> (T.intercalate separator (map indentValue values))
   `startNewLine` "]"
@@ -73,7 +73,7 @@ arrayWithNewLine values startNewLine =
     separator =
       "," `startNewLine` indent
     indentValue value =
-      valueWithNewLine value (indented startNewLine)
+      valueWithIndentation value (indented startNewLine)
 
 typedValue typeName valueString startNewLine =
     "{"
