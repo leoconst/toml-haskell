@@ -46,11 +46,10 @@ tableWithIndentation startNewLine toml =
     keyValues =
       map keyValue (Map.toList toml)
     keyValue (key, value) =
-      keyValueWithIndentation startNewLine key value ""
+      keyValueWithIndentation startNewLine key value
 
-keyValueWithIndentation startNewLine key value text =
-     textShow key <> ": " <> valueWithIndentation value startNewLine
-  <> text
+keyValueWithIndentation startNewLine key value =
+  textShow key <> ": " <> valueWithIndentation value startNewLine
 
 valueWithIndentation value startNewLine =
   output value
