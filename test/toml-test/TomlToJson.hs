@@ -27,54 +27,58 @@ main =
 
 
 table =
-  tableWithIndentation 0
+  tableWithNewLine "\n"
 
-tableWithIndentation indentation toml =
+tableWithNewLine newLine toml =
   if Map.null toml
     then "{}"
     else "{"
-      <> indentLine (indentation + 1) tableWithKeys
-      <> indentLine indentation "}"
+      <> newLine <> indent <> tableWithKeys
+      <> newLine <> "}"
   where
     tableWithKeys =
       T.intercalate separator keyValues
     separator =
-      ",\n" <> indent (indentation + 1)
+      "," <> newLine <> indent
     keyValues =
       map keyValue (Map.toList toml)
     keyValue (key, value) =
-      keyValueWithIndentation indentation key value ""
+      keyValueWithNewLine newLine key value ""
 
-keyValueWithIndentation indentation key value text =
-     textShow key <> ": " <> valueWithIndentation value (indentation + 1)
+keyValueWithNewLine newLine key value text =
+     textShow key <> ": " <> valueWithNewLine value (newLine <> indent)
   <> text
 
-valueWithIndentation (Toml.TableValue table) indentation =
-  tableWithIndentation indentation table
-valueWithIndentation (Toml.Array values) indentation =
+valueWithNewLine (Toml.TableValue table) newLine =
+  tableWithNewLine newLine table
+valueWithNewLine (Toml.Array values) newLine =
+  arrayWithNewLine values newLine
+valueWithNewLine (Toml.String text) newLine =
+  typedValue "string" text newLine
+valueWithNewLine (Toml.Integer integer) newLine =
+  typedValue "integer" (textShow integer) newLine
+valueWithNewLine (Toml.Float float) newLine =
+  typedValue "float" (textShow float) newLine
+valueWithNewLine (Toml.Boolean boolean) newLine =
+  typedValue "bool" (if boolean then "true" else "false") newLine
+
+arrayWithNewLine values newLine =
      "["
-  <> indentLine (indentation + 1)
-    (T.intercalate (",\n" <> (indent (indentation + 1))) (map (\value -> valueWithIndentation value (indentation + 1)) values))
-  <> indentLine indentation "]"
-valueWithIndentation (Toml.String text) indentation =
-  typedValue "string" text indentation
-valueWithIndentation (Toml.Integer integer) indentation =
-  typedValue "integer" (textShow integer) indentation
-valueWithIndentation (Toml.Float float) indentation =
-  typedValue "float" (textShow float) indentation
-valueWithIndentation (Toml.Boolean boolean) indentation =
-  typedValue "bool" (if boolean then "true" else "false") indentation
+  <> newLine <> indent <> (T.intercalate separator (map indentValue values))
+  <> newLine <> "]"
+  where
+    separator =
+      "," <> newLine <> indent
+    indentValue value =
+      valueWithNewLine value (newLine <> indent)
 
-typedValue typeName valueString indentation =
+typedValue typeName valueString newLine =
      "{"
-  <> indentLine (indentation + 1) ("\"type\": \"" <> typeName <> "\",")
-  <> indentLine (indentation + 1) ("\"value\": \"" <> valueString <> "\"")
-  <> indentLine indentation "}"
+  <> newLine <> indent <> "\"type\": \"" <> typeName <> "\","
+  <> newLine <> indent <> "\"value\": \"" <> valueString <> "\""
+  <> newLine <> "}"
 
-indent indentation =
-  T.replicate indentation "  "
-
-indentLine indentation line =
-  "\n" <> indent indentation <> line
+indent =
+  "  "
 
 textShow showable = T.pack $ show showable
